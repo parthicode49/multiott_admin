@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Export from "../../utils/Export";
 import * as Action from "../../../actions/Masters/complaintType";
 import { bindActionCreators } from "redux";
+import { all_sub_ott_list } from "../../../actions/Masters/subott";
 export default function ComplaintType() {
   const user = useSelector((state) => state.layout.profile);
   const dispatch = useDispatch();
@@ -75,6 +76,10 @@ export default function ComplaintType() {
     setTableData({ ...tempTableData });
   }, [rights]);
   const complaint_type = useSelector((state) => state?.masters?.complaint_type);
+  const sub_ott = useSelector((state) => state?.masters?.sub_ott);
+  useMemo(() => {
+    dispatch(all_sub_ott_list());
+  }, []);
   useEffect(() => {
     if (user?.id) {
       const data = new FormData();
@@ -92,30 +97,51 @@ export default function ComplaintType() {
     }
   }, [complaint_type]);
 
-  const formStructure = [
-    {
-      type: "select",
-      name: "complaint_for",
-      title: "Complaint For",
-      placeholder: "Select Complaint For",
-      options: [
-        { label: "With Login", value: "With Login" },
-        { label: "With Out Login", value: "With Out Login" },
-      ],
-      required: true,
-    },
-    {
-      id: "2",
-      type: "inputBox",
-      title: "Complaint Type",
-      name: "complaint_type",
-      placeholder: "Type Complation",
-      required: true,
-    },
-  ].filter((e) => e);
+  const [formStructure, setFormStructure] = useState(
+    [
+      {
+        type: "select",
+        name: "complaint_for",
+        title: "Complaint For",
+        placeholder: "Select Complaint For",
+        options: [
+          { label: "With Login", value: "With Login" },
+          { label: "With Out Login", value: "With Out Login" },
+        ],
+        required: true,
+      },
+
+      {
+        id: "2",
+        type: "inputBox",
+        title: "Complaint Type",
+        name: "complaint_type",
+        placeholder: "Type Complation",
+        required: true,
+      },
+      {
+        type: "multiselect",
+        name: "available_for_ott",
+        title: "Available For Ott",
+        placeholder: "Enter Available For Ott",
+        options: [],
+        required: true,
+      },
+    ].filter((e) => e)
+  );
+
+  useMemo(() => {
+    if (sub_ott?.data) {
+      const temp = formStructure;
+      temp[2]["options"] = sub_ott?.data?.map((ele) => ({
+        label: ele?.title,
+        value: ele?.id,
+      }));
+      setFormStructure([...temp]);
+    }
+  }, [sub_ott]);
 
   const handleSubmit1 = async (event) => {
-   
     // event.preventDefault();
     if (isEdit) {
       const resData = await complaint_type_update(form);

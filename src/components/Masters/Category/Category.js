@@ -18,6 +18,7 @@ import { Button } from "@mui/material";
 import DynamicFormModal from "../../utils/NewFormStructure/DynamicFormModal";
 import AddIcon from "@mui/icons-material/Add";
 import { bindActionCreators } from "redux";
+import { all_sub_ott_list } from "../../../actions/Masters/subott";
 
 const Category = () => {
   const navigate = useNavigate();
@@ -52,15 +53,8 @@ const Category = () => {
   const [isEdit, setIsEdit] = useState(false);
   const user = useSelector((state) => state?.layout?.profile);
   console.log(user, "chechkkkf");
-  const seasons = useSelector((state) => state.webseries.seasons);
-  const series = useSelector((state) => state?.webseries?.series_name);
+  const sub_ott = useSelector((state) => state?.masters?.sub_ott);
 
-  // const categories = useSelector((state) => state.masters.categories);
-  // const subcategories = useSelector((state) => state.masters.subcategories);
-  // const genre = useSelector((state) => state.masters.genre);
-  // const language = useSelector((state) => state.masters.languages);
-
-  console.log(location, "locationns");
   useEffect(() => {
     if (user?.id) {
       const data = new FormData();
@@ -80,7 +74,9 @@ const Category = () => {
       navigate(location.pathname, { replace: true, state: null });
     }
   }, [location]);
-
+  useMemo(() => {
+    dispatch(all_sub_ott_list());
+  }, []);
   useMemo(() => {
     if (categories) {
       const temp = tableData;
@@ -92,7 +88,7 @@ const Category = () => {
 
   const handleSubmit1 = async (event) => {
     // event.preventDefault();
-      const data = new FormData();
+    const data = new FormData();
 
     Object.keys(form)?.map((key) => data.append(key, form?.[key]));
     data.append("user", user?.id);
@@ -122,6 +118,12 @@ const Category = () => {
     }
   };
 
+  const options = [
+    { value: "1", label: "PArth" },
+    { value: "2", label: "PArth2" },
+    { value: "3", label: "PArth3" },
+  ];
+
   const [formStructure, setFormStructure] = useState(
     [
       {
@@ -130,6 +132,14 @@ const Category = () => {
         title: "Category Name",
         placeholder: "Enter Category name",
         regex: /^[a-zA-Z\s\&]+$/,
+        required: true,
+      },
+      {
+        type: "multiselect",
+        name: "available_for_ott",
+        title: "Available For Ott",
+        placeholder: "Enter Available For Ott",
+        options: options,
         required: true,
       },
       {
@@ -158,14 +168,26 @@ const Category = () => {
   useEffect(() => {
     if (isEdit) {
       const temp = formStructure;
-      temp[1]["display"] = "block";
+      temp[2]["display"] = "block";
       setFormStructure([...temp]);
     } else {
       const temp = formStructure;
-      temp[1]["display"] = "none";
+      temp[2]["display"] = "none";
       setFormStructure([...temp]);
     }
   }, [isEdit]);
+
+  useMemo(() => {
+    if (sub_ott?.data) {
+      const temp = formStructure;
+      temp[1]["options"] = sub_ott?.data?.map((ele) => ({
+        label: ele?.title,
+        value: ele?.id,
+      }));
+      setFormStructure([...temp]);
+    }
+  }, [sub_ott]);
+
   return (
     <div>
       {/* <div style={{textAlign:"right"}}>

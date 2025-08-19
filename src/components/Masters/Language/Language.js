@@ -12,6 +12,7 @@ import ViewChangeForm from "../../utils/ViewChangeForm";
 import * as Action from "../../../actions/Masters/language"
 import Export from "../../utils/Export";
 import { bindActionCreators } from "redux";
+import { all_sub_ott_list } from "../../../actions/Masters/subott";
 
 const Language = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Language = () => {
   const [save, setSave] = useState(false);
   const user = useSelector((state) => state.layout.profile);
   const language = useSelector((state) => state?.masters?.languages);
+    const sub_ott = useSelector((state) => state?.masters?.sub_ott);
   // const categories = useSelector((state) => state.masters.categories);
   // const subcategories = useSelector((state) => state.masters.subcategories);
   // const genre = useSelector((state) => state.masters.genre);
@@ -73,6 +75,9 @@ const Language = () => {
       dispatch(Action.all_language_list(data));
     }
   }, [user?.id , save]);
+    useMemo(() => {
+      dispatch(all_sub_ott_list());
+    }, []);
   useEffect(() => {
     if (location?.state?.formUpload) {
       const data = new FormData();
@@ -118,7 +123,7 @@ const Language = () => {
     }
   };
 
-  const FormStructure = [
+  const [formStructure , setFormStructure] = useState([
     {
       type: "inputBox",
       name: "language_name",
@@ -127,9 +132,27 @@ const Language = () => {
       regex: /^[a-zA-Z\s\&]+$/,
       required: true,
     },
+     {
+        type: "multiselect",
+        name: "available_for_ott",
+        title: "Available For Ott",
+        placeholder: "Select Available For Ott",
+        options: [],
+        required: true,
+      },
    
-  ].filter((e) => e);
+  ].filter((e) => e))
 
+  useMemo(() => {
+    if (sub_ott?.data) {
+      const temp = formStructure;
+      temp[1]["options"] = sub_ott?.data?.map((ele) => ({
+        label: ele?.title,
+        value: ele?.id,
+      }));
+      setFormStructure([...temp]);
+    }
+  }, [sub_ott]);
   return (
     <div>
       {/* <div style={{textAlign:"right"}}>
@@ -183,7 +206,7 @@ const Language = () => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         isPopUpNewTable={true}
-        formStructure={FormStructure}
+        formStructure={formStructure}
         formTitle={isEdit ? "Edit Language" : "Add Language"}
         onSubmit={handleSubmit1}
         initialData={editingIndex !== null ? tableData[editingIndex] : {}}

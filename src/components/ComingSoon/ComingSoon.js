@@ -64,7 +64,6 @@ const ComingSoon = () => {
       //   label: 'Uploaded By',
 
       // },
-      // ,
       {
         id: "content_type",
         label: "Type",

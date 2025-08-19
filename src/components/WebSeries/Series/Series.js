@@ -78,7 +78,7 @@ const Series = () => {
     // dispatch(all_advertisement_list(data));
     //   if(subcategories?.statuscode!=200)
     dispatch(all_subcategory_list());
-    dispatch(all_ott_name_list())
+    dispatch(all_ott_name_list());
     //   if(countries?.statuscode!=200)
     //   dispatch(all_country_list());
     //   if(categories?.statuscode!=200)
@@ -230,7 +230,7 @@ const Series = () => {
           options: [],
           // required: true,
         },
-         {
+        {
           type: "select",
           name: "ott",
           title: "OTT Name",
@@ -258,6 +258,14 @@ const Series = () => {
           title: "Series Subcategory",
           placeholder: "Select Series Subcategory",
           maxSelections: "3",
+          options: [],
+          required: true,
+        },
+        {
+          type: "select_multiple",
+          name: "available_for_ott",
+          title: "Available For Ott",
+          placeholder: "Select Available For Ott",
           options: [],
           required: true,
         },
@@ -609,7 +617,13 @@ const Series = () => {
             return {
               ...field,
               options: categories.data.map((c) => ({
-                label: c.category_name + " ( " + "Total Content" + " = "+ c.series_count + " ) ",
+                label:
+                  c.category_name +
+                  " ( " +
+                  "Total Content" +
+                  " = " +
+                  c.series_count +
+                  " ) ",
                 value: c.id,
               })),
             };
@@ -618,19 +632,68 @@ const Series = () => {
           if (index === 1 && subcategories) {
             const options = form?.category
               ? subcategories.data
-                  .filter((s) => s.category_id === form.category && s?.content_type == "Series")
+                  .filter(
+                    (s) =>
+                      s.category_id === form.category &&
+                      s?.content_type == "Series"
+                  )
                   .map((s) => ({
-                    label: s.subcategory_name + " ( " + s.series_image_view + " )" + " ( " + "Total Content" + " = "+ s.content_count + " ) ",
+                    label:
+                      s.subcategory_name +
+                      " ( " +
+                      s.series_image_view +
+                      " )" +
+                      " ( " +
+                      "Total Content" +
+                      " = " +
+                      s.content_count +
+                      " ) ",
                     value: s.id,
                   }))
               : subcategories.data.map((s) => ({
-                  label: s.subcategory_name + " ( " + s.series_image_view + " )" + " ( " + "Total Content" + " = "+ s.content_count + " ) ",
+                  label:
+                    s.subcategory_name +
+                    " ( " +
+                    s.series_image_view +
+                    " )" +
+                    " ( " +
+                    "Total Content" +
+                    " = " +
+                    s.content_count +
+                    " ) ",
                   value: s.id,
                 }));
             return { ...field, options };
           }
 
-          if (index === 3 && language) {
+          if (index === 2 && subcategories && form?.subcategory != undefined) {
+            console.log("check123");
+            const data = subcategories?.data?.filter((ele) => {
+              if (Array.isArray(form?.subcategory)) {
+                return form.subcategory.includes(ele?.id); // multiple selected
+              }
+              return ele?.id === form?.subcategory; // single selected
+            });
+
+            // Step 1: Collect all available_for_ott_data arrays
+            const allOttData = data?.flatMap(
+              (item) => item.available_for_ott_data || []
+            );
+
+            // Step 2: Remove duplicates by id
+            const newData = [
+              ...new Map(allOttData.map((item) => [item.id, item])).values(),
+            ];
+            return {
+              ...field,
+              options: newData?.map((l) => ({
+                label: l.title,
+                value: l.id,
+              })),
+            };
+          }
+
+          if (index === 4 && language) {
             return {
               ...field,
               options: language.data.map((l) => ({
@@ -639,7 +702,7 @@ const Series = () => {
               })),
             };
           }
-          if (index === 4 && Advisory) {
+          if (index === 5 && Advisory) {
             return {
               ...field,
               options: Advisory.data.map((l) => ({
@@ -655,7 +718,7 @@ const Series = () => {
         return { ...section, fields: updatedFields };
       })
     );
-  }, [categories, language, subcategories, Advisory, form?.category]);
+  }, [categories, language, subcategories, Advisory, form?.category , form?.subcategory]);
   const subscriptions = useSelector(
     (state) => state?.subscriptions?.subscriptions
   );
@@ -665,7 +728,7 @@ const Series = () => {
         prevFormStructure.map((section) => {
           if (section.title === "Details") {
             const updatedFields = section.fields.map((field, index) => {
-              if (index === 8) {
+              if (index === 9) {
                 return { ...field, display: "block" };
               }
               return field;
@@ -680,7 +743,7 @@ const Series = () => {
         prevFormStructure.map((section) => {
           if (section.title === "Details") {
             const updatedFields = section.fields.map((field, index) => {
-              if (index === 8) {
+              if (index === 9) {
                 return { ...field, display: "none" };
               }
               return field;
@@ -918,7 +981,7 @@ const Series = () => {
         distributor_name:
           value?.ownership == "Content Owner" ? value?.distributor_name : null,
 
-          episode_data : value?.episode_count + " Episode",
+        episode_data: value?.episode_count + " Episode",
         info: (
           <img
             src={InfoIcone}
@@ -990,15 +1053,17 @@ const Series = () => {
     }
   }, [language]);
   // console.log("tableData",tableData)
-    useMemo(() => {
-      if (ott_name?.data) {
-        const tempFilter = tableData;
-        tempFilter["filterColumn"][3]["options"] = ott_name?.data?.map((ele) =>ele?.ott_name);
-  
-        setTableData({ ...tempFilter });
-        // setFormStructure([...temp])
-      }
-    }, [ott_name]);
+  useMemo(() => {
+    if (ott_name?.data) {
+      const tempFilter = tableData;
+      tempFilter["filterColumn"][3]["options"] = ott_name?.data?.map(
+        (ele) => ele?.ott_name
+      );
+
+      setTableData({ ...tempFilter });
+      // setFormStructure([...temp])
+    }
+  }, [ott_name]);
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData();
@@ -1008,7 +1073,7 @@ const Series = () => {
         key !== "subtitle_file" &&
         key !== "countrys" &&
         key !== "audio_file" &&
-        key !== "ownership"&&
+        key !== "ownership" &&
         data.append(key, form?.[key])
     );
     data.append("cast", JSON.stringify(form?.cast));

@@ -276,6 +276,14 @@ const Movie = () => {
           required: true,
         },
         {
+          type: "select_multiple",
+          name: "available_for_ott",
+          title: "Available For Ott",
+          placeholder: "Enter Available For Ott",
+          options: [],
+          required: true,
+        },
+        {
           type: "inputBox",
           name: "title",
           title: "Title",
@@ -758,7 +766,7 @@ const Movie = () => {
         prevFormStructure.map((section) => {
           if (section.title === "Details") {
             const updatedFields = section.fields.map((field, index) => {
-              if (index === 7) {
+              if (index === 8) {
                 return { ...field, display: "block" };
               }
               return field;
@@ -773,7 +781,7 @@ const Movie = () => {
         prevFormStructure.map((section) => {
           if (section.title === "Details") {
             const updatedFields = section.fields.map((field, index) => {
-              if (index === 7) {
+              if (index === 8) {
                 return { ...field, display: "none" };
               }
               return field;
@@ -867,7 +875,13 @@ const Movie = () => {
             return {
               ...field,
               options: categories.data.map((c) => ({
-                label: c.category_name + " ( " + "Total Content" + " = "+ c.movie_count + " ) ",
+                label:
+                  c.category_name +
+                  " ( " +
+                  "Total Content" +
+                  " = " +
+                  c.movie_count +
+                  " ) ",
                 value: c.id,
               })),
             };
@@ -883,17 +897,62 @@ const Movie = () => {
                   )
                   .map((s) => ({
                     label:
-                      s.subcategory_name + " ( " + s.movie_image_view + " )" + " ( " + "Total Content" + " = "+ s.content_count + " ) ",
+                      s.subcategory_name +
+                      " ( " +
+                      s.movie_image_view +
+                      " )" +
+                      " ( " +
+                      "Total Content" +
+                      " = " +
+                      s.content_count +
+                      " ) ",
                     value: s.id,
                   }))
               : subcategories.data.map((s) => ({
-                  label: s.subcategory_name + " ( " + s.movie_image_view + " )" + " ( " + "Total Content" + " = "+ s.content_count + " ) ",
+                  label:
+                    s.subcategory_name +
+                    " ( " +
+                    s.movie_image_view +
+                    " )" +
+                    " ( " +
+                    "Total Content" +
+                    " = " +
+                    s.content_count +
+                    " ) ",
                   value: s.id,
                 }));
             return { ...field, options };
           }
+          console.log("check12");
 
-          if (index === 3 && language) {
+          if (index === 2 && subcategories && form?.subcategory != undefined) {
+            console.log("check123");
+            const data = subcategories?.data?.filter((ele) => {
+              if (Array.isArray(form?.subcategory)) {
+                return form.subcategory.includes(ele?.id); // multiple selected
+              }
+              return ele?.id === form?.subcategory; // single selected
+            });
+
+            // Step 1: Collect all available_for_ott_data arrays
+            const allOttData = data?.flatMap(
+              (item) => item.available_for_ott_data || []
+            );
+
+            // Step 2: Remove duplicates by id
+            const newData = [
+              ...new Map(allOttData.map((item) => [item.id, item])).values(),
+            ];
+            return {
+              ...field,
+              options: newData?.map((l) => ({
+                label: l.title,
+                value: l.id,
+              })),
+            };
+          }
+
+          if (index === 4 && language) {
             return {
               ...field,
               options: language.data.map((l) => ({
@@ -902,7 +961,7 @@ const Movie = () => {
               })),
             };
           }
-          if (index === 4 && Advisory) {
+          if (index === 5 && Advisory) {
             return {
               ...field,
               options: Advisory.data.map((l) => ({
@@ -918,7 +977,14 @@ const Movie = () => {
         return { ...section, fields: updatedFields };
       })
     );
-  }, [categories, language, Advisory, subcategories, form?.category]);
+  }, [
+    categories,
+    language,
+    Advisory,
+    subcategories,
+    form?.category,
+    form?.subcategory,
+  ]);
 
   useEffect(() => {
     setFormStructure((prevFormStructure) => {

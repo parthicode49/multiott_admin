@@ -9,7 +9,7 @@ import {
   TextField,
   Autocomplete,
   InputLabel,
-    InputAdornment,
+  InputAdornment,
   Paper,
   useTheme,
   Typography,
@@ -19,6 +19,7 @@ import {
   RadioGroup,
   Radio,
   FormControl,
+  Chip,
 } from "@mui/material";
 import { CloudUpload, Delete } from "@mui/icons-material";
 import { Slide } from "@mui/material";
@@ -431,112 +432,109 @@ const DynamicFormModal = ({
                     />
                   </Grid>
                 );
-              case "date" :
-                   return (
-                          <Grid
-                            item
-                            xs={12}
-                            md={12}
-                            lg={field?.size || 12}
-                            key={index + "-grid"}
-                            display={field.display || "block"}
-                          >
-                            <InputLabel
-                              shrink={true}
-                              style={{
-                                marginBottom: "12px",
-                                color: darkMode ? "#ffffff" : "#151515",
-                              }}
-                            >
-                              <span>{field.title}</span>
-                              {field?.required && (
-                                <span
-                                  style={{ color: "red", paddingLeft: "5px" }}
-                                >
-                                  *
-                                </span>
-                              )}
-                            </InputLabel>
+              case "date":
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    md={12}
+                    lg={field?.size || 12}
+                    key={index + "-grid"}
+                    display={field.display || "block"}
+                  >
+                    <InputLabel
+                      shrink={true}
+                      style={{
+                        marginBottom: "12px",
+                        color: darkMode ? "#ffffff" : "#151515",
+                      }}
+                    >
+                      <span>{field.title}</span>
+                      {field?.required && (
+                        <span style={{ color: "red", paddingLeft: "5px" }}>
+                          *
+                        </span>
+                      )}
+                    </InputLabel>
 
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker
-                                // label={value.placeholder || value.title}
-                                value={
-                                  formData?.[field.name]
-                                    ? dayjs(formData?.[field.name])
-                                    : null
-                                }
-                                  minDate={field.min ? dayjs(field.min) : undefined}
-            maxDate={field.max ? dayjs(field.max) : undefined}
-                                defaultValue={
-                                  formData?.[field.name]
-                                    ? undefined
-                                    : field.default
-                                    ? dayjs(field.default)
-                                    : undefined
-                                }
-                                onChange={(newValue) => {
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    [field.name]: newValue
-                                      ? dayjs(newValue).format("YYYY-MM-DD")
-                                      : "",
-                                  }));
-                                }}
-                                slots={{
-                                  openPickerIcon: CalendarTodayIcon,
-                                }}
-                                slotProps={{
-                                  textField: {
-                                    fullWidth: true,
-                                    required: field?.required,
-                                    placeholder: field.placeholder,
-                                    InputProps: {
-                                      startAdornment: field?.symbol && (
-                                        <InputAdornment position="start">
-                                          {field.symbol}
-                                        </InputAdornment>
-                                      ),
-                                      sx: {
-                                        borderRadius: 2,
-                                        backgroundColor:
-                                          "var(--themeColorLighterShade)",
-                                        "& .MuiOutlinedInput-notchedOutline": {
-                                          borderColor:
-                                            "var(--themeColorLighterShade) !important",
-                                        },
-                                        "& input:-webkit-autofill": {
-                                          WebkitBoxShadow: darkMode
-                                            ? "0 0 0 100px rgb(22, 22, 22) inset"
-                                            : "0 0 0 100px rgb(255, 255, 255) inset",
-                                          WebkitTextFillColor:
-                                            "var(--themeFontColor)",
-                                        },
-                                      },
-                                    },
-                                  },
-                                  openPickerIcon: {
-                                    sx: { color: "#DE4444" },
-                                  },
-                                }}
-                              />
-                            </LocalizationProvider>
-                            {!allowSubmit &&
-                              field.required &&
-                              !formData[field.name] && (
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    color: "red !important",
-                                    display: "block",
-                                    mb: 1,
-                                  }}
-                                >
-                                  Please fill this field
-                                </Typography>
-                              )}
-                          </Grid>
-                        );  
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        // label={value.placeholder || value.title}
+                        value={
+                          formData?.[field.name]
+                            ? dayjs(formData?.[field.name])
+                            : null
+                        }
+                        minDate={field.min ? dayjs(field.min) : undefined}
+                        maxDate={field.max ? dayjs(field.max) : undefined}
+                        defaultValue={
+                          formData?.[field.name]
+                            ? undefined
+                            : field.default
+                            ? dayjs(field.default)
+                            : undefined
+                        }
+                        onChange={(newValue) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            [field.name]: newValue
+                              ? dayjs(newValue).format("YYYY-MM-DD")
+                              : "",
+                          }));
+                        }}
+                        slots={{
+                          openPickerIcon: CalendarTodayIcon,
+                        }}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            required: field?.required,
+                            placeholder: field.placeholder,
+                            InputProps: {
+                              startAdornment: field?.symbol && (
+                                <InputAdornment position="start">
+                                  {field.symbol}
+                                </InputAdornment>
+                              ),
+                              sx: {
+                                borderRadius: 2,
+                                backgroundColor:
+                                  "var(--themeColorLighterShade)",
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  borderColor:
+                                    "var(--themeColorLighterShade) !important",
+                                },
+                                "& input:-webkit-autofill": {
+                                  WebkitBoxShadow: darkMode
+                                    ? "0 0 0 100px rgb(22, 22, 22) inset"
+                                    : "0 0 0 100px rgb(255, 255, 255) inset",
+                                  WebkitTextFillColor: "var(--themeFontColor)",
+                                },
+                              },
+                            },
+                          },
+                          openPickerIcon: {
+                            sx: { color: "#DE4444" },
+                          },
+                        }}
+                      />
+                    </LocalizationProvider>
+                    {!allowSubmit &&
+                      field.required &&
+                      !formData[field.name] && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "red !important",
+                            display: "block",
+                            mb: 1,
+                          }}
+                        >
+                          Please fill this field
+                        </Typography>
+                      )}
+                  </Grid>
+                );
               case "select":
                 return (
                   <Grid
@@ -665,6 +663,201 @@ const DynamicFormModal = ({
                     />
                   </Grid>
                 );
+              case "multiselect":
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    md={12}
+                    key={index + "-grid"}
+                    lg={12}
+                    display={field.display || "block"}
+                  >
+                    <InputLabel
+                      shrink={true}
+                      style={{
+                        marginBottom: "12px",
+                        color: darkMode ? "#ffffff" : "#151515",
+                      }}
+                    >
+                      <span>{field.title}</span>
+                      {field?.required && (
+                        <span style={{ color: "red", paddingLeft: "5px" }}>
+                          *
+                        </span>
+                      )}
+                    </InputLabel>
+                    <Autocomplete
+                      multiple
+                      id={`multi-select-${field.name}`}
+                      options={field.options || []}
+                      getOptionLabel={(option) => option.label}
+                       isOptionEqualToValue={(option, selectedValue) =>
+                        option.value === selectedValue?.value
+                      } // Compare by value
+                      filterSelectedOptions
+                      value={
+                        field.options.filter((opt) =>
+                          formData?.[field.name]?.includes(opt.value)
+                        ) || []
+                      }
+                      disabled={field?.disabled}
+                      onChange={(event, newValue) => {
+                        setFormData({
+                          ...formData,
+                          [field.name]: newValue.map((item) => item.value),
+                        });
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          required={field?.required}
+                          placeholder={field?.placeholder}
+                          helperText={
+                            (!allowSubmit &&
+                              (formData?.[field.name] == undefined ||
+                                formData?.[field.name]?.length <= 0) &&
+                              field?.required && (
+                                <p
+                                  style={{
+                                    textAlign: "left",
+                                    color: "red",
+                                  }}
+                                >
+                                  Please fill this field
+                                </p>
+                              )) ||
+                            (formData?.[field.name]?.length ===
+                              (field?.maxSelections || 10) &&
+                              (field?.errorText || (
+                                <p
+                                  style={{
+                                    textAlign: "left",
+                                    color: "red",
+                                  }}
+                                >
+                                  Maximum number of selections have been made.
+                                </p>
+                              )))
+                          }
+                          InputProps={{
+                            ...params.InputProps,
+                            sx: {
+                              borderRadius: 2,
+                              backgroundColor: "var(--themeColorLighterShade)",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor:
+                                  "var(--themeColorLighterShade)  !important",
+                              },
+                              // backgroundColor: darkMode
+                              //   ? "#0d0d0d"
+                              //   : "#e6e6ef",
+                              // "& .MuiOutlinedInput-notchedOutline": {
+                              //   borderColor: darkMode
+                              //     ? "#333333"
+                              //     : "#d1d1e0 !important",
+                              // },
+                              // "&:hover .MuiOutlinedInput-notchedOutline":
+                              //   {
+                              //     borderColor: darkMode
+                              //       ? "#555555"
+                              //       : "#a1a1b5 !important",
+                              //   },
+                            },
+                          }}
+                          inputProps={{
+                            ...params.inputProps,
+                            style: {
+                              paddingLeft: "10px",
+                              color: darkMode ? "#ffffff" : "#151515",
+                            },
+                          }}
+                          sx={{
+                            "& .MuiInputBase-root": {
+                              color: darkMode ? "#ffffff" : "#151515",
+                            },
+                          }}
+                        />
+                      )}
+                      renderOption={(props, option, { selected }) => (
+                        <li
+                          {...props}
+                          style={{
+                            ...props.style,
+                            backgroundColor: selected
+                              ? darkMode
+                                ? "rgba(100, 206, 70, 0.2)"
+                                : "rgba(100, 206, 70, 0.1)"
+                              : null,
+                            color: darkMode ? "#ffffff" : "#151515",
+                            "&:hover": {
+                              backgroundColor: darkMode ? "#333333" : "#f0f0f7",
+                            },
+                          }}
+                        >
+                          {option.label}
+                        </li>
+                      )}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip
+                            {...getTagProps({ index })}
+                            key={option.value}
+                            label={option.label}
+                            style={{
+                              backgroundColor: darkMode
+                                ? "rgba(100, 206, 70, 0.3)"
+                                : "rgba(100, 206, 70, 0.2)",
+                              color: darkMode ? "#ffffff" : "#1B3720",
+                              border: darkMode
+                                ? "1px solid rgba(100, 206, 70, 0.5)"
+                                : "1px solid #64CE46",
+                              margin: "4px",
+                            }}
+                            // deleteIcon={
+                            //   <CancelIcon
+                            //     style={{
+                            //       color: darkMode
+                            //         ? "#ffffff"
+                            //         : "#1B3720",
+                            //       fontSize: "16px",
+                            //     }}
+                            //   />
+                            // }
+                          />
+                        ))
+                      }
+                      PaperComponent={({ children }) => (
+                        <Paper
+                          sx={{
+                            backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
+                            color: darkMode ? "#ffffff" : "#151515",
+                            "& .MuiAutocomplete-option": {
+                              "&:hover": {
+                                backgroundColor: darkMode
+                                  ? "#333333"
+                                  : "#f5f5fa",
+                              },
+                              '&[aria-selected="true"]': {
+                                backgroundColor: darkMode
+                                  ? "rgba(100, 206, 70, 0.2)"
+                                  : "rgba(100, 206, 70, 0.1)",
+                              },
+                              '&[aria-selected="true"].Mui-focused': {
+                                backgroundColor: darkMode
+                                  ? "rgba(100, 206, 70, 0.3)"
+                                  : "rgba(100, 206, 70, 0.2)",
+                              },
+                            },
+                          }}
+                        >
+                          {children}
+                        </Paper>
+                      )}
+                    />
+                  </Grid>
+                );
+
               case "file":
                 return (
                   <Grid item xs={12} md={12} key={index}>

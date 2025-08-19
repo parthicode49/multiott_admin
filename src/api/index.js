@@ -3,8 +3,8 @@ import axios from 'axios';
 // const API = axios.create({ baseURL: 'https://bridge.rtalkies.app/api/' });
 // export const IMAGE = 'https://bridge.rtalkies.app/'
 
-const API = axios.create({ baseURL: 'http://164.52.202.121:5005/api/' });
-export const IMAGE = 'http://164.52.202.121:5005/'
+const API = axios.create({ baseURL: 'http://192.168.1.14:7781/api/' });
+export const IMAGE = 'http://192.168.1.14:7781/'
 
 // const API = axios.create({ baseURL: 'http://ec2-15-206-35-104.ap-south-1.compute.amazonaws.com:8000/api/' });
 // export const IMAGE = 'http://ec2-15-206-35-104.ap-south-1.compute.amazonaws.com:8000/'

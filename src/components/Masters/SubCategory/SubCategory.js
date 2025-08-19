@@ -54,8 +54,8 @@ const SubCategory = () => {
         label: "Content Type",
       },
       {
-        id : "view",
-        label : "View"
+        id: "view",
+        label: "View",
       },
       {
         id: "count",
@@ -82,7 +82,7 @@ const SubCategory = () => {
     ],
     tableBody: [],
     filterColumn: [
-            {
+      {
         id: "1",
         title: "select content type",
         name: "content_type",
@@ -94,7 +94,6 @@ const SubCategory = () => {
         name: "category",
         options: ["Portrait", "Landscape"],
       },
-
     ],
   });
   const user = useSelector((state) => state.layout.profile);
@@ -118,9 +117,12 @@ const SubCategory = () => {
   useMemo(() => {
     if (subcategories) {
       const temp = tableData;
-      temp.tableBody = subcategories?.data?.map((ele)=>({
+      temp.tableBody = subcategories?.data?.map((ele) => ({
         ...ele,
-        view : ele?.content_type === "Movie" ? ele?.movie_image_view : ele?.series_image_view
+        view:
+          ele?.content_type === "Movie"
+            ? ele?.movie_image_view
+            : ele?.series_image_view,
       }));
       setTableData({ ...temp });
     }
@@ -172,11 +174,23 @@ const SubCategory = () => {
         required: true,
       },
       {
+        type: "multiselect",
+        name: "available_for_ott",
+        title: "Available For Ott",
+        placeholder: "Enter Available For Ott",
+        disabled: true,
+        options: [],
+        required: true,
+      },
+      {
         type: "select",
         name: "content_type",
         title: "Content Type",
         placeholder: "Select Content Type",
-        options: [{label : "Movie" , value : "Movie"} , {label : "Series" , value : "Series"}],
+        options: [
+          { label: "Movie", value: "Movie" },
+          { label: "Series", value: "Series" },
+        ],
         // regex: /^[a-zA-Z\s\&]+$/,
         required: true,
       },
@@ -201,7 +215,7 @@ const SubCategory = () => {
         regex: /^[0-9\s\&]+$/,
         // isCaps:true,
         required: true,
-        display : "none"
+        display: "none",
       },
       {
         id: "5",
@@ -209,7 +223,7 @@ const SubCategory = () => {
         title: "Movie Image View",
         name: "movie_image_view",
         default: "Vertical",
-         display : "none",
+        display: "none",
         size: "6",
         options: [
           { value: "Vertical", color: "success" },
@@ -222,7 +236,7 @@ const SubCategory = () => {
         title: "Series Image View",
         name: "series_image_view",
         default: "Horizontal",
-         display : "none",
+        display: "none",
         size: "6",
         options: [
           { value: "Vertical", color: "success" },
@@ -259,34 +273,49 @@ const SubCategory = () => {
       // setFormStructure([...temp])
     }
   }, [categories]);
-  
-  useMemo(() => {
-    if(form?.content_type == "Movie"){
-      const temp = formStructure
-      temp[4]["display"] = "block"
-      temp[5]["display"] = "none"
-       setFormStructure([...temp]);
-    }else if(form?.content_type == "Series"){
-       const temp = formStructure
-      temp[5]["display"] = "block"
-      temp[4]["display"] = "none"
-       setFormStructure([...temp]);
-    }
-  },[form?.content_type])
-    useEffect(() => {
-      if (isEdit) {
-        const temp = formStructure;
-        temp[3]["display"] = "block";
-        temp[1]["disabled"] = true;
-        setFormStructure([...temp]);
-      } else {
-        const temp = formStructure;
-        temp[3]["display"] = "none";
-        temp[1]["disabled"] = false;
 
-        setFormStructure([...temp]);
-      }
-    }, [isEdit])
+  useMemo(() => {
+    if (form?.category_id != undefined && categories) {
+      const temp = formStructure;
+      temp[1]["disabled"] = false;
+      const newOption = categories?.data?.find(
+        (ele) => ele?.id === form?.category_id
+      );
+      temp[1]["options"] = newOption?.available_for_ott_data?.map((ele) => ({
+        label: ele?.title,
+        value: ele?.id,
+      }));
+      setFormStructure([...temp]);
+    }
+  }, [form?.category_id]);
+
+  useMemo(() => {
+    if (form?.content_type == "Movie") {
+      const temp = formStructure;
+      temp[5]["display"] = "block";
+      temp[6]["display"] = "none";
+      setFormStructure([...temp]);
+    } else if (form?.content_type == "Series") {
+      const temp = formStructure;
+      temp[6]["display"] = "block";
+      temp[5]["display"] = "none";
+      setFormStructure([...temp]);
+    }
+  }, [form?.content_type]);
+  useEffect(() => {
+    if (isEdit) {
+      const temp = formStructure;
+      temp[4]["display"] = "block";
+      temp[2]["disabled"] = true;
+      setFormStructure([...temp]);
+    } else {
+      const temp = formStructure;
+      temp[4]["display"] = "none";
+      temp[2]["disabled"] = false;
+
+      setFormStructure([...temp]);
+    }
+  }, [isEdit]);
 
   console.log("tableData", tableData);
   return (
